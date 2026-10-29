@@ -10,7 +10,7 @@ window.COUNTRIES = [
   "Ecuador", "Peru", "Argentina", "Brazil",
   "United Kingdom", "Iceland", "Portugal", "Spain", "France", "Italy", "Vatican",
   "Germany", "Austria", "Czechia", "Slovakia", "Poland", "Greece", "Turkey",
-  "Morocco", "South Africa",
+  "Morocco", "W. Sahara", "South Africa",
   "Israel", "Palestine", "Jordan", "United Arab Emirates",
   "Kazakhstan", "Kyrgyzstan",
   "China", "Hong Kong", "Macao", "Taiwan", "Vietnam", "Thailand", "Singapore",
