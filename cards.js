@@ -29,6 +29,11 @@ window.CARDS = [
     description: ""
   },
   {
+    title: "Countries",
+    link: "countries/",
+    description: ""
+  },
+  {
     title: "LinkedIn",
     link: "https://www.linkedin.com/in/isaac-mansell-829ba2223/",
     description: "You can turn off profile view tracking under Settings & Privacy > Visibility"
