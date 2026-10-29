@@ -7,7 +7,7 @@
 window.COUNTRIES = [
   "Canada", "United States of America", "Mexico", "Costa Rica", "Panama",
   "Barbados", "Bahamas", "Haiti", "Jamaica",
-  "Ecuador", "Peru", "Argentina", "Brazil",
+  "Ecuador", "Peru", "Argentina", "Falkland Is.", "Brazil",
   "United Kingdom", "Iceland", "Portugal", "Spain", "France", "Italy", "Vatican",
   "Germany", "Austria", "Czechia", "Slovakia", "Poland", "Greece", "Turkey",
   "Morocco", "W. Sahara", "South Africa",
