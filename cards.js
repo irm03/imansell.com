@@ -21,17 +21,17 @@ window.CARDS = [
   {
     title: "The Free Press",
     link: "https://www.thefp.com/p/im-a-harvard-student-its-too-easy-to-get-an-a",
-    description: "How free can the press be if it is paywalled?"
+    description: "How free can the press be if my article is paywalled?"
   },
   {
     title: "The Cost of Scrolling",
     link: "https://azariak.github.io/CostOfScrolling/",
-    description: ""
+    description: "In Australia, they scroll in the opposite direction"
   },
   {
     title: "Countries",
     link: "countries/",
-    description: ""
+    description: "Most recent was the Nomad Games in Kyrgyzstan"
   },
   {
     title: "LinkedIn",
