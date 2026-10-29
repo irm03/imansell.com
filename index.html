@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Isaac Mansell</title>
+<style>
+  /* Layout: name, a List | Sisyphus switch, then one centered view. Always white paper, black Times. */
+  :root {
+    --paper: #ffffff;
+    --ink: #000000;
+    --serif: "Times New Roman", Times, "Liberation Serif", serif;
+    color-scheme: light;
+  }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    margin: 0;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 48px 32px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 { font-weight: normal; font-size: 26px; margin: 0 0 14px; letter-spacing: 0.01em; }
+  a { color: var(--ink); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .switch { display: flex; gap: 10px; align-items: baseline; font-size: 16px; }
+  .switch button { font: inherit; color: var(--ink); background: none; border: none; padding: 2px; cursor: pointer; text-underline-offset: 4px; }
+  .switch button[aria-pressed="true"] { text-decoration: underline; }
+  .switch button:focus-visible { outline: 1px dotted var(--ink); }
+
+  /* List */
+  .view-list { margin-top: 36px; width: min(420px, 100%); }
+  .view-list ul { list-style: disc; margin: 0; padding-left: 22px; display: grid; gap: 12px; font-size: 19px; }
+  .view-list li::marker { font-size: 0.8em; }
+  .view-list a { margin-left: 6px; }
+
+  /* Sisyphus */
+  .view-sis { margin-top: 28px; width: 100%; max-width: 760px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .hill-wrap { position: relative; width: 100%; display: flex; align-items: center; }
+  #hill { width: 100%; height: auto; aspect-ratio: 760 / 340; display: block; touch-action: none; cursor: pointer; outline: none; }
+  #hill:focus-visible { outline: 1px dotted var(--ink); }
+  .card {
+    position: absolute; left: 50%; top: 50%; z-index: 5;
+    width: min(260px, 80vw); height: 150px; margin: -75px 0 0 calc(min(260px, 80vw) / -2);
+    box-sizing: border-box; padding: 0 20px;
+    background: var(--paper); border: 1px solid var(--ink);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center;
+  }
+  .card .name { font-size: 22px; line-height: 1.15; text-wrap: balance; }
+  .card a { font-size: 16px; }
+  .card .desc { display: none; font-size: 14px; line-height: 1.3; margin-top: 4px; }
+  .card:hover .desc, .card:focus-within .desc { display: block; }
+  .card.pop { animation: pop 380ms cubic-bezier(.2,1.4,.4,1); }
+  @keyframes pop { from { transform: scale(0.2); } to { transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .card.pop { animation: none; } }
+  @media (max-width: 560px) { .hill-wrap { min-height: 170px; } }
+  @media (min-width: 561px) { .card { left: 27%; top: 36%; width: 250px; height: 140px; margin: -70px 0 0 -125px; } }
+
+  .sis-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; align-items: center; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .sis-hint { font-size: 14px; }
+  .push { font: inherit; font-size: 17px; color: var(--ink); background: var(--paper); border: 1px solid var(--ink); padding: 6px 26px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+  .push:active { transform: translateY(1px); }
+  .push:focus-visible { outline: 1px dotted var(--ink); outline-offset: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Isaac Mansell</h1>
+
+<div class="switch" role="group" aria-label="View">
+  <button id="btn-list" aria-pressed="true">List</button>
+  <span aria-hidden="true">&middot;</span>
+  <button id="btn-sis" aria-pressed="false">Sisyphus</button>
+</div>
+
+<section class="view-list" id="view-list">
+  <ul id="list"></ul>
+</section>
+
+<section class="view-sis" id="view-sis" hidden>
+  <div class="hill-wrap">
+    <canvas id="hill" tabindex="0" aria-label="Sisyphus pushing a boulder uphill. Hold the space bar or the Push button to push."></canvas>
+    <div class="card" id="card" aria-live="polite" hidden></div>
+  </div>
+  <div class="sis-row">
+    <button class="push" id="push">Push</button>
+    <span class="sis-hint">Hold the button or the space bar.</span>
+    <span id="count">Count: 0</span>
+  </div>
+</section>
+
+<script src="cards.js"></script>
+<script>
+  const items = (window.CARDS || []).filter((c) => c && c.title && c.link);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function makeLink(c) {
+    const a = document.createElement("a");
+    a.href = c.link; a.textContent = "[link]";
+    if (!c.link.startsWith("mailto:")) { a.target = "_blank"; a.rel = "noopener"; }
+    return a;
+  }
+
+  // ---------- List ----------
+  const list = document.getElementById("list");
+  items.forEach((c) => {
+    const li = document.createElement("li");
+    li.textContent = c.title;
+    li.appendChild(makeLink(c));
+    list.appendChild(li);
+  });
+
+  // ---------- Sisyphus: push to the top, a card is revealed as the boulder rolls back ----------
+  const hill = document.getElementById("hill");
+  const hx = hill.getContext("2d");
+  const HW = 760, HH = 340;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  hill.width = HW * dpr; hill.height = HH * dpr;
+  hx.scale(dpr, dpr);
+
+  const A = { x: 40, y: 312 }, B = { x: 680, y: 92 };
+  const L = Math.hypot(B.x - A.x, B.y - A.y);
+  const ux = (B.x - A.x) / L, uy = (B.y - A.y) / L;
+  const nx = -uy, ny = ux;
+  const R = 15, SD0 = 34;
+  const at = (d, off = 0) => ({ x: A.x + ux * d + nx * off, y: A.y + uy * d + ny * off });
+
+  let sd = SD0, sv = 0, man = SD0 - R - 16, pushing = false, stumble = 0, mode = "play", count = 0, step = 0, pause = 0;
+  const card = document.getElementById("card");
+
+  // hand out every card once before any repeats
+  let bag = [];
+  const nextCard = () => {
+    if (!bag.length) bag = items.map((_, i) => i).sort(() => Math.random() - 0.5);
+    return bag.pop();
+  };
+
+  function showCard(i) {
+    const c = items[i];
+    card.replaceChildren();
+    const name = document.createElement("span");
+    name.className = "name"; name.textContent = c.title;
+    card.appendChild(name);
+    card.appendChild(makeLink(c));
+    if (c.description) {
+      const d = document.createElement("span");
+      d.className = "desc"; d.textContent = c.description;
+      card.appendChild(d);
+    }
+    card.hidden = false;
+    card.classList.remove("pop"); void card.offsetWidth; card.classList.add("pop");
+  }
+
+  function draw() {
+    hx.clearRect(0, 0, HW, HH);
+    hx.lineWidth = 1; hx.strokeStyle = "#000"; hx.fillStyle = "#fff"; hx.lineJoin = "round"; hx.lineCap = "round";
+    hx.beginPath();
+    hx.moveTo(0, A.y); hx.lineTo(A.x, A.y); hx.lineTo(B.x, B.y); hx.lineTo(HW, B.y);
+    hx.stroke();
+
+    // boulder
+    const bc = at(sd, -R);
+    hx.beginPath(); hx.arc(bc.x, bc.y, R, 0, Math.PI * 2); hx.fill(); hx.stroke();
+    const rot = sd / R;
+    hx.beginPath(); hx.moveTo(bc.x + Math.cos(rot) * 5, bc.y + Math.sin(rot) * 5); hx.lineTo(bc.x + Math.cos(rot) * 11, bc.y + Math.sin(rot) * 11); hx.stroke();
+
+    // Sisyphus, smiling
+    const attached = mode === "play";
+    const foot = at(man);
+    const walking = (attached && pushing && !stumble) || mode === "descend";
+    const lean = attached && pushing && !stumble ? 0.75 : mode === "descend" ? -0.1 : 0.3;
+    const hip = { x: foot.x + 2, y: foot.y - 26 };
+    const neck = { x: hip.x + Math.sin(lean) * 26, y: hip.y - Math.cos(lean) * 26 };
+    const head = { x: neck.x + Math.sin(lean) * 8, y: neck.y - Math.cos(lean) * 8 };
+    const swing = walking ? Math.sin(step) * 7 : 0;
+    hx.beginPath();
+    hx.moveTo(hip.x, hip.y); hx.lineTo(foot.x - 6 + swing, foot.y);
+    hx.moveTo(hip.x, hip.y); hx.lineTo(foot.x + 6 - swing, foot.y - 2);
+    hx.moveTo(hip.x, hip.y); hx.lineTo(neck.x, neck.y);
+    const hand = attached ? { x: bc.x - R * 0.85, y: bc.y - 2 } : { x: neck.x + 4, y: neck.y + 18 };
+    hx.moveTo(neck.x, neck.y + 3); hx.lineTo(hand.x, hand.y);
+    hx.moveTo(neck.x, neck.y + 3); hx.lineTo(hand.x - 4, hand.y + 3);
+    hx.stroke();
+    hx.beginPath(); hx.arc(head.x, head.y, 7, 0, Math.PI * 2); hx.fill(); hx.stroke();
+    hx.beginPath(); hx.arc(head.x + 1, head.y + 0.5, 3.6, 0.15 * Math.PI, 0.85 * Math.PI); hx.stroke();
+    hx.fillStyle = "#000";
+    hx.beginPath(); hx.arc(head.x - 1, head.y - 2, 0.9, 0, Math.PI * 2); hx.arc(head.x + 3, head.y - 2, 0.9, 0, Math.PI * 2); hx.fill();
+  }
+
+  function tick() {
+    if (!document.getElementById("view-sis").hidden) {
+      if (mode === "play") {
+        if (pushing && stumble === 0 && Math.random() < 0.006) stumble = 45;   // he slips now and then
+        if (stumble > 0) stumble--;
+        if (pushing && stumble === 0) { sv = Math.min(1.6, sv + 0.035); step += 0.25; }
+        else sv = Math.max(-3, sv - 0.05);
+        sd += sv;
+        if (sd <= SD0) { sd = SD0; sv = 0; }
+        man = sd - R - 16;
+        if (sd >= L && items.length) {
+          sd = L; sv = 0; mode = "rollback"; pause = 0;
+          count++; document.getElementById("count").textContent = `Count: ${count}`;
+          showCard(nextCard());
+        }
+      } else if (mode === "rollback") {
+        sv = Math.max(-5, sv - 0.09); sd = Math.max(SD0, sd + sv);
+        if (++pause > 50) mode = "descend";
+      } else if (mode === "descend") {
+        sv = Math.max(-5, sv - 0.09); sd = Math.max(SD0, sd + sv);
+        man -= 1.8; step += 0.3;
+        if (man <= SD0 - R - 16) { man = SD0 - R - 16; sd = SD0; sv = 0; mode = "play"; }
+      }
+      draw();
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  const startPush = (e) => { if (e) e.preventDefault(); pushing = true; card.hidden = true; };
+  const stopPush = () => { pushing = false; };
+  for (const el of [hill, document.getElementById("push")]) {
+    el.addEventListener("pointerdown", startPush);
+    el.addEventListener("pointerup", stopPush);
+    el.addEventListener("pointerleave", stopPush);
+    el.addEventListener("pointercancel", stopPush);
+    el.addEventListener("contextmenu", (e) => e.preventDefault());
+  }
+  addEventListener("keydown", (e) => {
+    if (document.getElementById("view-sis").hidden) return;
+    // held keys auto-repeat; only a fresh press counts, so holding through the summit keeps the card up
+    if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); if (!e.repeat) startPush(); }
+  });
+  addEventListener("keyup", (e) => { if (e.key === "ArrowRight" || e.key === " ") stopPush(); });
+  addEventListener("blur", stopPush);
+
+  // ---------- view switch ----------
+  const views = { list: "view-list", sis: "view-sis" };
+  const buttons = { list: document.getElementById("btn-list"), sis: document.getElementById("btn-sis") };
+  function setView(v) {
+    for (const k in views) {
+      document.getElementById(views[k]).hidden = k !== v;
+      buttons[k].setAttribute("aria-pressed", String(k === v));
+    }
+  }
+  for (const k in buttons) buttons[k].addEventListener("click", () => setView(k));
+  setView("list");
+</script>
+</body>
+</html>
