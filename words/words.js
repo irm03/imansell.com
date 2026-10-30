@@ -13,6 +13,6 @@ window.WORDS = [
   "Invidious", "Jettison", "Magnanimous", "Maraud", "Mellifluous", "Mercurial",
   "Obsequious", "Obstreperous", "Obviate", "Perfidy", "Prevaricate", "Priggish",
   "Recalcitrant", "Redolent", "Sanctimonious", "Saturnine", "Sialoquent", "Stentorian",
-  "Supercilious", "Superfluous", "Sycophant", "Traduce", "Truculent", "Tsujigiri",
+  "Supercilious", "Superfluous", "Sycophant", "Traduce", "Truculent", "Tsujigiri.",
   "Turpitude", "Uncouth", "Unctuous", "Undulating", "Vituperative", "Zenith",
 ];
