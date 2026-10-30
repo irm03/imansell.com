@@ -16,7 +16,7 @@ window.CARDS = [
   {
     title: "The YARID",
     link: "https://theyarid.org/",
-    description: "A collegiate journal of Jewish thought and culture"
+    description: "I started a collegiate journal of Jewish thought & culture"
   },
   {
     title: "The Free Press",
@@ -36,12 +36,12 @@ window.CARDS = [
   {
     title: "Good Words",
     link: "words/",
-    description: "Yes, I founded the Word Club in high school"
+    description: "My apartment smells of rich mahogany"
   },
   {
     title: "LinkedIn",
     link: "https://www.linkedin.com/in/isaac-mansell-829ba2223/",
-    description: "You can turn off profile view tracking under Settings & Privacy > Visibility"
+    description: "You can turn off view tracking under Settings & Privacy > Visibility"
   },
   {
     title: "Contact Me",
