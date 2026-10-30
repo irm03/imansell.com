@@ -29,9 +29,14 @@ window.CARDS = [
     description: "In Australia, they scroll in the opposite direction"
   },
   {
-    title: "Countries",
+    title: "Countries Visited",
     link: "countries/",
     description: "Most recent was the Nomad Games in Kyrgyzstan"
+  },
+  {
+    title: "Good Words",
+    link: "words/",
+    description: "Yes, I founded the Word Club in high school"
   },
   {
     title: "LinkedIn",
