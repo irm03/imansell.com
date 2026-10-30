@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Good Words · Isaac Mansell</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<style>
+  :root { --paper: #ffffff; --ink: #000000; color-scheme: light; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: "Times New Roman", Times, "Liberation Serif", serif;
+    margin: 0; box-sizing: border-box;
+    padding: clamp(48px, 11vh, 120px) max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px));
+    display: flex; flex-direction: column; align-items: center;
+  }
+  h1 { font-weight: normal; font-size: clamp(30px, 4vw, 40px); margin: 0; }
+  h1 a { color: var(--ink); text-decoration: none; }
+  h1 a:hover { text-decoration: underline; }
+  /* words flow down each column: 4 columns of 15 on computers, 2 on phones */
+  ul {
+    list-style: none; margin: clamp(40px, 7vh, 72px) 0 0; padding: 0;
+    columns: 4; column-gap: clamp(40px, 6vw, 96px);
+    font-size: 20px; line-height: 1.6;
+  }
+  li { break-inside: avoid; }
+  @media (max-width: 720px) { ul { columns: 2; column-gap: 40px; font-size: 18px; } }
+</style>
+</head>
+<body>
+<h1><a href="../">Isaac Mansell</a></h1>
+<ul id="words"></ul>
+<script src="words.js"></script>
+<script>
+  const list = document.getElementById("words");
+  [...new Set((window.WORDS || []).map((w) => w.trim()).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b))
+    .forEach((w) => { const li = document.createElement("li"); li.textContent = w; list.appendChild(li); });
+</script>
+</body>
+</html>
